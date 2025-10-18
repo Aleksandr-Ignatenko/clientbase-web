@@ -217,8 +217,8 @@ export default function CRM() {
   { code: "+84", country: "🇻🇳 Vietnam" },
   { code: "+260", country: "🇿🇲 Zambia" },
   { code: "+263", country: "🇿🇼 Zimbabwe" }
-    // можно дополнить до полного списка ISO при желании
-  ];
+ ];
+  
   // --- Проверка сессии ---
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
