@@ -1,76 +1,121 @@
-import { createClient } from '@supabase/supabase-js'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
 
-// создаём клиент Supabase
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
+);
 
-export default function Home() {
-  const [session, setSession] = useState(null)
-  const [clients, setClients] = useState([])
-  const [newClient, setNewClient] = useState('')
+export default function CRM() {
+  const [clients, setClients] = useState([]);
+  const [form, setForm] = useState({
+    full_name: "",
+    email: "",
+    phone: "",
+    company: "",
+    notes: "",
+  });
+  const [loading, setLoading] = useState(false);
 
+  // Загрузка клиентов из базы
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => setSession(session))
-    return () => listener.subscription.unsubscribe()
-  }, [])
+    fetchClients();
+  }, []);
 
-  async function signIn() {
-    const email = prompt('Введите email для входа:')
-    if (email) {
-      await supabase.auth.signInWithOtp({ email })
-      alert('Ссылка для входа отправлена на ' + email)
-    }
-  }
-
-  async function signOut() {
-    await supabase.auth.signOut()
-  }
-
-  async function loadClients() {
-    const { data } = await supabase.from('CRM').select('*').order('created_at', { ascending: false })
-    setClients(data || [])
+  async function fetchClients() {
+    const { data, error } = await supabase.from("clients").select("*").order("created_at", { ascending: false });
+    if (error) console.error("Ошибка при загрузке:", error);
+    else setClients(data);
   }
 
   async function addClient() {
-    if (!newClient) return
-    await supabase.from('CRM').insert({ full_name: newClient })
-    setNewClient('')
-    loadClients()
+    setLoading(true);
+    const { error } = await supabase.from("clients").insert([form]);
+    setLoading(false);
+    if (error) alert("Ошибка при добавлении: " + error.message);
+    else {
+      setForm({ full_name: "", email: "", phone: "", company: "", notes: "" });
+      fetchClients();
+    }
   }
 
-  if (!session)
-    return (
-      <div style={{ textAlign: 'center', marginTop: '40px' }}>
-        <h2>Вход в CRM</h2>
-        <button onClick={signIn}>Войти по email</button>
-      </div>
-    )
+  async function deleteClient(id) {
+    if (!confirm("Удалить этого клиента?")) return;
+    const { error } = await supabase.from("clients").delete().eq("id", id);
+    if (error) alert("Ошибка при удалении: " + error.message);
+    else fetchClients();
+  }
 
   return (
-    <div style={{ maxWidth: '600px', margin: '40px auto', textAlign: 'center' }}>
-      <h2>CRM — Клиенты</h2>
-      <button onClick={signOut} style={{ float: 'right' }}>Выйти</button>
-      <div>
+    <div style={{ fontFamily: "sans-serif", maxWidth: 800, margin: "40px auto" }}>
+      <h1>CRM — Клиенты</h1>
+
+      <div style={{ marginBottom: 30 }}>
         <input
-          value={newClient}
-          onChange={(e) => setNewClient(e.target.value)}
           placeholder="Имя клиента"
+          value={form.full_name}
+          onChange={(e) => setForm({ ...form, full_name: e.target.value })}
         />
-        <button onClick={addClient}>Добавить</button>
+        <input
+          placeholder="Email"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
+        <input
+          placeholder="Телефон"
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+        />
+        <input
+          placeholder="Компания"
+          value={form.company}
+          onChange={(e) => setForm({ ...form, company: e.target.value })}
+        />
+        <input
+          placeholder="Заметки"
+          value={form.notes}
+          onChange={(e) => setForm({ ...form, notes: e.target.value })}
+        />
+        <button onClick={addClient} disabled={loading}>
+          {loading ? "Добавление..." : "Добавить клиента"}
+        </button>
       </div>
 
-      <hr />
-      <button onClick={loadClients}>Обновить список</button>
+      <table border="1" cellPadding="6" style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead>
+          <tr>
+            <th>Имя</th>
+            <th>Email</th>
+            <th>Телефон</th>
+            <th>Компания</th>
+            <th>Заметки</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {clients.length === 0 && (
+            <tr>
+              <td colSpan="6" style={{ textAlign: "center" }}>Нет клиентов</td>
+            </tr>
+          )}
+          {clients.map((c) => (
+            <tr key={c.id}>
+              <td>{c.full_name}</td>
+              <td>{c.email}</td>
+              <td>{c.phone}</td>
+              <td>{c.company}</td>
+              <td>{c.notes}</td>
+              <td>
+                <button onClick={() => deleteClient(c.id)}>Удалить</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-      <ul>
-        {clients.map((c) => (
-          <li key={c.id}>{c.full_name}</li>
-        ))}
-      </ul>
+      <button style={{ marginTop: 20 }} onClick={fetchClients}>
+        Обновить список
+      </button>
     </div>
-  )
+  );
 }
