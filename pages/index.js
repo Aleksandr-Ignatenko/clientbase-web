@@ -10,195 +10,259 @@ const supabase = createClient(
 
 // Главный компонент CRM
 export default function CRM() {
-  // Список клиентов
-  const [clients, setClients] = useState([]);
+  // --- Состояния ---
+  const [session, setSession] = useState(null);
+    // Список клиентов
+  const [clients, setClients] = useState([]); 
+  const [loading, setLoading] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
-  // Состояние формы
+  // Форма клиента
   const [form, setForm] = useState({
     full_name: "",
     email: "",
-    countryCode: "+7", // по умолчанию Россия
+    countryCode: "+7",
     phone: "",
     company: "",
     notes: "",
   });
 
-  // Флаг загрузки при добавлении клиента
-  const [loading, setLoading] = useState(false);
+  // --- Список телефонных кодов ---
+  const countryCodes = [
+    { code: "+1", country: "🇺🇸 США/Канада" },
+    { code: "+7", country: "🇷🇺 Россия/Казахстан" },
+    { code: "+44", country: "🇬🇧 Великобритания" },
+    { code: "+49", country: "🇩🇪 Германия" },
+    { code: "+33", country: "🇫🇷 Франция" },
+    { code: "+39", country: "🇮🇹 Италия" },
+    { code: "+34", country: "🇪🇸 Испания" },
+    { code: "+81", country: "🇯🇵 Япония" },
+    { code: "+86", country: "🇨🇳 Китай" },
+    { code: "+91", country: "🇮🇳 Индия" },
+    { code: "+55", country: "🇧🇷 Бразилия" },
+    { code: "+61", country: "🇦🇺 Австралия" },
+    { code: "+598", country: "🇺🇾 Уругвай" },
+    { code: "+380", country: "🇺🇦 Украина" },
+    { code: "+375", country: "🇧🇾 Беларусь" },
+    { code: "+994", country: "🇦🇿 Азербайджан" },
+    { code: "+996", country: "🇰🇬 Кыргызстан" },
+    { code: "+998", country: "🇺🇿 Узбекистан" },
+    { code: "+90", country: "🇹🇷 Турция" },
+    { code: "+971", country: "🇦🇪 ОАЭ" },
+    // можно дополнить до полного списка ISO при желании
+  ];
 
-  // Загрузка клиентов при загрузке страницы
+  // --- Проверка сессии ---
   useEffect(() => {
-    fetchClients();
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+    });
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
   }, []);
 
-  // === Загрузка клиентов из Supabase ===
+  // --- Загрузка клиентов ---
+  useEffect(() => {
+    if (session) fetchClients();
+  }, [session]);
+
   async function fetchClients() {
     const { data, error } = await supabase
       .from("CRM")
       .select("*")
+      .eq("user_id", session.user.id)
       .order("created_at", { ascending: false });
 
     if (error) console.error("Ошибка при загрузке:", error);
     else setClients(data);
   }
 
-  // === Добавление клиента ===
-  async function addClient() {
-    // Проверка email на корректность
+  // === Добавление или обновление клиента ===
+  async function saveClient() {
+    if (!form.full_name.trim()) {
+      alert("Поле 'Имя клиента' обязательно");
+      return;
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (form.email && !emailRegex.test(form.email)) {
       alert("Введите корректный email");
       return;
     }
 
-    // Проверка телефона: только цифры
-    const phoneRegex = /^[0-9]+$/;
+        // Проверка телефона: только цифры
+    const phoneRegex = /^[0-9]*$/;
     if (!phoneRegex.test(form.phone)) {
       alert("Телефон должен содержать только цифры");
       return;
     }
 
-    // Собираем полный номер телефона
-    const fullPhone = `${form.countryCode}${form.phone}`;
+        // Собираем полный номер телефона
+    const fullPhone =
+      form.phone.length > 0 ? `${form.countryCode}${form.phone}` : "";
 
     setLoading(true);
 
-    // Добавляем клиента в Supabase
-    const { error } = await supabase.from("CRM").insert([
-      {
-        full_name: form.full_name,
-        email: form.email,
-        phone: fullPhone,
-        company: form.company,
-        notes: form.notes,
-      },
-    ]);
+    let error;
+    if (editingId) {
+      ({ error } = await supabase
+        .from("CRM")
+        .update({
+          full_name: form.full_name,
+          email: form.email,
+          phone: fullPhone,
+          company: form.company,
+          notes: form.notes,
+        })
+        .eq("id", editingId)
+        .eq("user_id", session.user.id));
+    } else {
+      ({ error } = await supabase.from("CRM").insert([
+        {
+          user_id: session.user.id,
+          full_name: form.full_name,
+          email: form.email,
+          phone: fullPhone,
+          company: form.company,
+          notes: form.notes,
+        },
+      ]));
+    }
 
     setLoading(false);
 
-    if (error) {
-      alert("Ошибка при добавлении: " + error.message);
-    } else {
-      // Очищаем форму
-      setForm({
-        full_name: "",
-        email: "",
-        countryCode: "+7",
-        phone: "",
-        company: "",
-        notes: "",
-      });
-      fetchClients(); // обновляем список
+    if (error) alert("Ошибка: " + error.message);
+    else {
+      resetForm();
+      fetchClients();
     }
+  }
+
+  // === Редактирование клиента ===
+  function editClient(client) {
+    setForm({
+      full_name: client.full_name || "",
+      email: client.email || "",
+      countryCode: client.phone ? client.phone.match(/^\+\d+/)?.[0] || "+7" : "+7",
+      phone: client.phone ? client.phone.replace(/^\+\d+/, "") : "",
+      company: client.company || "",
+      notes: client.notes || "",
+    });
+    setEditingId(client.id);
   }
 
   // === Удаление клиента ===
   async function deleteClient(id) {
-    if (!confirm("Удалить этого клиента?")) return;
-    const { error } = await supabase.from("CRM").delete().eq("id", id);
-    if (error) alert("Ошибка при удалении: " + error.message);
+    if (!confirm("Удалить клиента?")) return;
+    const { error } = await supabase
+      .from("CRM")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", session.user.id);
+    if (error) alert("Ошибка: " + error.message);
     else fetchClients();
   }
 
-  // === Рендер интерфейса ===
+  // === Разлогин ===
+  async function logout() {
+    await supabase.auth.signOut();
+    setSession(null);
+  }
+
+  // === Очистка формы ===
+  function resetForm() {
+    setForm({
+      full_name: "",
+      email: "",
+      countryCode: "+7",
+      phone: "",
+      company: "",
+      notes: "",
+    });
+    setEditingId(null);
+  }
+
+  // === Интерфейс ===
+  if (!session)
+    return (
+      <div style={{ textAlign: "center", marginTop: 100 }}>
+        <h2>Войдите в систему</h2>
+        <p>Для работы CRM необходимо авторизоваться через Supabase Auth.</p>
+      </div>
+    );
+
   return (
     <div
       style={{
         fontFamily: "sans-serif",
-        maxWidth: 800,
+        maxWidth: 900,
         margin: "40px auto",
         background: "#f5f5f5",
-        padding: "20px",
-        borderRadius: "10px",
+        padding: 20,
+        borderRadius: 10,
       }}
     >
-      <h1 style={{ textAlign: "center" }}>CRM — Клиенты</h1>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h1>CRM — Клиенты</h1>
+        <button onClick={logout}>Выйти</button>
+      </div>
 
       {/* === ФОРМА ДОБАВЛЕНИЯ === */}
-      <div
-        style={{
-          marginBottom: 30,
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
-        }}
-      >
-        {/* Имя клиента */}
+      <div style={{ marginBottom: 30, display: "flex", flexDirection: "column", gap: 8 }}>
         <input
-          placeholder="Имя клиента"
+          placeholder="Имя клиента *"
           value={form.full_name}
           onChange={(e) => setForm({ ...form, full_name: e.target.value })}
         />
-
-        {/* Email с проверкой при потере фокуса */}
         <input
           placeholder="Email"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
-          onBlur={() => {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (form.email && !emailRegex.test(form.email)) {
-              alert("Введите корректный email");
-            }
-          }}
         />
-
-        {/* Телефон + выбор кода страны */}
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div style={{ display: "flex", gap: 8 }}>
           <select
-            style={{ width: "90px" }}
+            style={{ width: "150px" }}
             value={form.countryCode}
             onChange={(e) => setForm({ ...form, countryCode: e.target.value })}
           >
-            <option value="+1">🇺🇸 +1</option>
-            <option value="+7">🇷🇺 +7</option>
-            <option value="+598">🇺🇾 +598</option>
-            <option value="+44">🇬🇧 +44</option>
-            <option value="+49">🇩🇪 +49</option>
+            {countryCodes.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.country} ({c.code})
+              </option>
+            ))}
           </select>
-
           <input
             placeholder="Телефон"
             value={form.phone}
             onChange={(e) =>
               setForm({
                 ...form,
-                phone: e.target.value.replace(/\D/g, ""), // удаляем нецифровые символы
+                phone: e.target.value.replace(/\D/g, ""),
               })
             }
           />
         </div>
-
-        {/* Компания */}
         <input
           placeholder="Компания"
           value={form.company}
           onChange={(e) => setForm({ ...form, company: e.target.value })}
         />
-
-        {/* Заметки */}
         <input
           placeholder="Заметки"
           value={form.notes}
           onChange={(e) => setForm({ ...form, notes: e.target.value })}
         />
-
-        {/* Кнопка добавления */}
-        <button onClick={addClient} disabled={loading}>
-          {loading ? "Добавление..." : "Добавить клиента"}
-        </button>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={saveClient} disabled={loading}>
+            {loading ? "Сохранение..." : editingId ? "Сохранить изменения" : "Добавить клиента"}
+          </button>
+          {editingId && <button onClick={resetForm}>Отмена</button>}
+        </div>
       </div>
 
-      {/* === ТАБЛИЦА КЛИЕНТОВ === */}
-      <table
-        border="1"
-        cellPadding="6"
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          backgroundColor: "white",
-        }}
-      >
+      {/* === СПИСОК КЛИЕНТОВ === */}
+      <table border="1" cellPadding="6" style={{ width: "100%", background: "white" }}>
         <thead>
           <tr>
             <th>Имя</th>
@@ -210,40 +274,29 @@ export default function CRM() {
           </tr>
         </thead>
         <tbody>
-          {clients.length === 0 && (
+          {clients.length === 0 ? (
             <tr>
               <td colSpan="6" style={{ textAlign: "center" }}>
                 Нет клиентов
               </td>
             </tr>
+          ) : (
+            clients.map((c) => (
+              <tr key={c.id}>
+                <td>{c.full_name}</td>
+                <td>{c.email}</td>
+                <td>{c.phone}</td>
+                <td>{c.company}</td>
+                <td>{c.notes}</td>
+                <td>
+                  <button onClick={() => editClient(c)}>✏️</button>{" "}
+                  <button onClick={() => deleteClient(c.id)}>🗑️</button>
+                </td>
+              </tr>
+            ))
           )}
-          {clients.map((c) => (
-            <tr key={c.id}>
-              <td>{c.full_name}</td>
-              <td>{c.email}</td>
-              <td>{c.phone}</td>
-              <td>{c.company}</td>
-              <td>{c.notes}</td>
-              <td>
-                <button onClick={() => deleteClient(c.id)}>Удалить</button>
-              </td>
-            </tr>
-          ))}
         </tbody>
       </table>
-
-      {/* Кнопка обновления */}
-      <button
-        style={{
-          marginTop: 20,
-          display: "block",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
-        onClick={fetchClients}
-      >
-        Обновить список
-      </button>
     </div>
   );
 }
