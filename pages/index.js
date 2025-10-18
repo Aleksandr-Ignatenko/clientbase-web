@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
+import PhoneInput from "react-phone-input-2";
+import 'react-phone-input-2/lib/style.css';
+
 
 // Подключаем Supabase с помощью переменных окружения
 const supabase = createClient(
