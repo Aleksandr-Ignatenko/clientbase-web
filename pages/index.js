@@ -23,14 +23,14 @@ export default function CRM() {
   }, []);
 
   async function fetchClients() {
-    const { data, error } = await supabase.from("clients").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("CRM").select("*").order("created_at", { ascending: false });
     if (error) console.error("Ошибка при загрузке:", error);
     else setClients(data);
   }
 
   async function addClient() {
     setLoading(true);
-    const { error } = await supabase.from("clients").insert([form]);
+    const { error } = await supabase.from("CRM").insert([form]);
     setLoading(false);
     if (error) alert("Ошибка при добавлении: " + error.message);
     else {
@@ -41,7 +41,7 @@ export default function CRM() {
 
   async function deleteClient(id) {
     if (!confirm("Удалить этого клиента?")) return;
-    const { error } = await supabase.from("clients").delete().eq("id", id);
+    const { error } = await supabase.from("CRM").delete().eq("id", id);
     if (error) alert("Ошибка при удалении: " + error.message);
     else fetchClients();
   }
