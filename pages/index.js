@@ -1,6 +1,8 @@
 // Импортируем хуки React и клиент Supabase
 import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 // Подключаем Supabase с помощью переменных окружения
 const supabase = createClient(
@@ -185,12 +187,20 @@ export default function CRM() {
 
   // === Интерфейс ===
   if (!session)
-    return (
-      <div style={{ textAlign: "center", marginTop: 100 }}>
-        <h2>Войдите в систему</h2>
-        <p>Для работы CRM необходимо авторизоваться через Supabase Auth.</p>
-      </div>
-    );
+  return (
+    <div style={{ maxWidth: 400, margin: "80px auto", textAlign: "center" }}>
+      <h2>🔐 Вход в CRM</h2>
+      <p style={{ marginBottom: 20 }}>
+        Войдите с помощью email — ссылка для входа придёт на почту.
+      </p>
+      <Auth
+        supabaseClient={supabase}
+        appearance={{ theme: ThemeSupa }}
+        providers={[]}
+        magicLink
+      />
+    </div>
+  );
 
   return (
     <div
