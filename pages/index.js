@@ -406,17 +406,17 @@ export default function CRM() {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
         <div style={{ display: "flex", gap: 8 }}>
-          <select
-            style={{ width: "150px" }}
-            value={form.countryCode}
-            onChange={(e) => setForm({ ...form, countryCode: e.target.value })}
-          >
-            {countryCodes.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.country} ({c.code})
-              </option>
-            ))}
-          </select>
+        <select
+          style={{ width: "150px" }}
+          value={form.countryCode}
+          onChange={(e) => setForm({ ...form, countryCode: e.target.value })}
+        >
+          {countryCodes.map((c) => (
+            <option key={c.code} value={c.code}>
+              {getFlagEmoji(c.iso)} {c.country} ({c.code})
+            </option>
+          ))}
+        </select>
           <input
             placeholder="Телефон"
             value={form.phone}
