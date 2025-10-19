@@ -11,7 +11,12 @@ select, option {
                'Twemoji Mozilla', sans-serif;
   /* чуть увеличим размер, чтобы флаги были лучше видны */
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.4;
+}
+/* Убедитесь, что опции имеют достаточную высоту */
+option {
+  height: 24px;
+  padding: 4px;
 }
 /* Убедимся, что emoji отображаются корректно */
 .flag-emoji {
