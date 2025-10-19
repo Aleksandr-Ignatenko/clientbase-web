@@ -6,24 +6,6 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import PhoneInput from "react-phone-input-2";
 import 'react-phone-input-2/lib/style.css';
 
-// --- Функция для конвертации ISO-кода (например "RU") в emoji-флаг ---
-// Универсальная функция получения флага по ISO-коду
-function getFlagEmoji(isoCode) {
-  if (!isoCode || isoCode.length !== 2) return isoCode;
-  try {
-    const flag = isoCode
-      .toUpperCase()
-      .replace(/./g, char =>
-        String.fromCodePoint(127397 + char.charCodeAt(0))
-      );
-    // Проверим, отрисовался ли флаг корректно
-    // (Firefox иногда не показывает, поэтому добавим ISO перед ним)
-    return flag === isoCode ? `${isoCode}` : `${isoCode} ${flag}`;
-  } catch {
-    return isoCode;
-  }
-}
-
 // Подключаем Supabase с помощью переменных окружения
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -422,9 +404,9 @@ export default function CRM() {
           onChange={(e) => setForm({ ...form, countryCode: e.target.value })}
         >
           {countryCodes.map((c) => (
-            <option key={c.code} value={c.code}>
-              {getFlagEmoji(c.iso)} {c.country} ({c.code})
-            </option>
+        <option key={c.code} value={c.code} data-iso={c.iso}>
+          {c.country} ({c.code})
+        </option>
           ))}
         </select>
           <input
