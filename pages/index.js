@@ -7,26 +7,20 @@ import PhoneInput from "react-phone-input-2";
 import 'react-phone-input-2/lib/style.css';
 
 // --- Функция для конвертации ISO-кода (например "RU") в emoji-флаг ---
-// ЗАМЕНИТЕ вашу функцию getFlagEmoji на эту улучшенную версию:
+// Универсальная функция получения флага по ISO-коду
 function getFlagEmoji(isoCode) {
-  if (!isoCode || isoCode.length !== 2) return "🏳️";
-  
+  if (!isoCode || isoCode.length !== 2) return isoCode;
   try {
-    // Более надежный метод создания региональных индикаторов
-    const codePoints = isoCode
+    const flag = isoCode
       .toUpperCase()
-      .split('')
-      .map(char => 127397 + char.charCodeAt(0));
-    
-    const flag = String.fromCodePoint(...codePoints);
-    
-    // Проверим, отрисовал ли браузер цветной флаг (в Chrome часто нет)
-    if (flag === "🇷🇺" && flag.length === 2) return flag; // пример
-    
-    // Альтернатива: вернуть emoji-код страны (например 🇷🇺 → 🏴‍☠️)
-    return flag || `🌐 ${isoCode}`;
+      .replace(/./g, char =>
+        String.fromCodePoint(127397 + char.charCodeAt(0))
+      );
+    // Проверим, отрисовался ли флаг корректно
+    // (Firefox иногда не показывает, поэтому добавим ISO перед ним)
+    return flag === isoCode ? `${isoCode}` : `${isoCode} ${flag}`;
   } catch {
-    return `🌐 ${isoCode}`;
+    return isoCode;
   }
 }
 
@@ -128,7 +122,7 @@ export default function CRM() {
   { code: "+852", country: "Hong Kong", iso: "HK" },
   { code: "+36", country: "Hungary", iso: "HU" },
   { code: "+354", country: "Iceland", iso: "IS" },
-  { code: "+91", country: "🇮🇳 India", iso: "IN" },
+  { code: "+91", country: "India", iso: "IN" },
   { code: "+62", country: "Indonesia", iso: "ID" },
   { code: "+98", country: "Iran", iso: "IR" },
   { code: "+964", country: "Iraq", iso: "IQ" },
@@ -202,7 +196,7 @@ export default function CRM() {
   { code: "+250", country: "Rwanda", iso: "RW" },
   { code: "+966", country: "Saudi Arabia", iso: "SA" },
   { code: "+221", country: "Senegal", iso: "SN" },
-  { code: "+381", country: "🇷🇸 Serbia", iso: "RS" },
+  { code: "+381", country: "Serbia", iso: "RS" },
   { code: "+248", country: "Seychelles", iso: "SC" },
   { code: "+232", country: "Sierra Leone", iso: "SL" },
   { code: "+65", country: "Singapore", iso: "SG" },
