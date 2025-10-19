@@ -412,17 +412,18 @@ useEffect(() => {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
         <div style={{ display: "flex", gap: 8 }}>
-        <select
-          style={{ width: "150px" }}
-          value={form.countryCode}
-          onChange={(e) => setForm({ ...form, countryCode: e.target.value })}
-        >
-          {countryCodes.map((c) => (
-        <option key={c.code} value={c.code} data-iso={c.iso}>
-          {c.country} ({c.code})
-        </option>
-          ))}
-        </select>
+          <select
+            id="country-select"
+            style={{ width: "150px", paddingLeft: "32px" }}
+            value={form.countryCode}
+            onChange={(e) => setForm({ ...form, countryCode: e.target.value })}
+          >
+            {countryCodes.map((c) => (
+              <option key={c.code} value={c.code} data-iso={c.iso}>
+                {c.country} ({c.code})
+              </option>
+            ))}
+          </select>
           <input
             placeholder="Телефон"
             value={form.phone}
@@ -434,6 +435,7 @@ useEffect(() => {
             }
           />
         </div>
+
         <input
           placeholder="Компания"
           value={form.company}
