@@ -7,16 +7,25 @@ import PhoneInput from "react-phone-input-2";
 import 'react-phone-input-2/lib/style.css';
 
 // --- Функция для конвертации ISO-кода (например "RU") в emoji-флаг ---
+// ЗАМЕНИТЕ вашу функцию getFlagEmoji на эту улучшенную версию:
 function getFlagEmoji(isoCode) {
   if (!isoCode || isoCode.length !== 2) return "🏳️";
   
-  // Альтернативный метод: используем региональные индикаторы
-  const codePoints = isoCode
-    .toUpperCase()
-    .split('')
-    .map(char => 127397 + char.charCodeAt(0));
-  
-  return String.fromCodePoint(...codePoints);
+  try {
+    // Более надежный метод создания региональных индикаторов
+    const codePoints = isoCode
+      .toUpperCase()
+      .split('')
+      .map(char => 127397 + char.charCodeAt(0));
+    
+    const flag = String.fromCodePoint(...codePoints);
+    
+    // Проверяем, что флаг создался корректно
+    return flag.length === 2 ? flag : `[${isoCode}]`;
+  } catch (error) {
+    console.warn(`Не удалось создать флаг для ${isoCode}:`, error);
+    return `[${isoCode}]`;
+  }
 }
 
 // Подключаем Supabase с помощью переменных окружения
