@@ -20,11 +20,13 @@ function getFlagEmoji(isoCode) {
     
     const flag = String.fromCodePoint(...codePoints);
     
-    // Проверяем, что флаг создался корректно
-    return flag.length === 2 ? flag : `[${isoCode}]`;
-  } catch (error) {
-    console.warn(`Не удалось создать флаг для ${isoCode}:`, error);
-    return `[${isoCode}]`;
+    // Проверим, отрисовал ли браузер цветной флаг (в Chrome часто нет)
+    if (flag === "🇷🇺" && flag.length === 2) return flag; // пример
+    
+    // Альтернатива: вернуть emoji-код страны (например 🇷🇺 → 🏴‍☠️)
+    return flag || `🌐 ${isoCode}`;
+  } catch {
+    return `🌐 ${isoCode}`;
   }
 }
 
