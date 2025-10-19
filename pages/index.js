@@ -6,6 +6,13 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import PhoneInput from "react-phone-input-2";
 import 'react-phone-input-2/lib/style.css';
 
+// --- Функция для конвертации ISO-кода (например "RU") в emoji-флаг ---
+function getFlagEmoji(isoCode) {
+  if (!isoCode || isoCode.length !== 2) return "";
+  // Преобразуем буквы в рег. индикаторные символы
+  const codePoints = [...isoCode.toUpperCase()].map(c => 127397 + c.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
 
 // Подключаем Supabase с помощью переменных окружения
 const supabase = createClient(
@@ -34,33 +41,33 @@ export default function CRM() {
 
   // --- Список телефонных кодов ---
  const countryCodes = [
-  { code: "+376", country: "🇦🇩 Andorra" },
-  { code: "+244", country: "🇦🇴 Angola" },
-  { code: "+1268", country: "🇦🇬 Antigua and Barbuda" },
-  { code: "+54", country: "🇦🇷 Argentina" },
-  { code: "+374", country: "🇦🇲 Armenia" },
-  { code: "+297", country: "🇦🇼 Aruba" },
-  { code: "+61", country: "🇦🇺 Australia" },
-  { code: "+43", country: "🇦🇹 Austria" },
-  { code: "+994", country: "🇦🇿 Azerbaijan" },
-  { code: "+1242", country: "🇧🇸 Bahamas" },
-  { code: "+973", country: "🇧🇭 Bahrain" },
-  { code: "+880", country: "🇧🇩 Bangladesh" },
-  { code: "+1246", country: "🇧🇧 Barbados" },
-  { code: "+375", country: "🇧🇾 Belarus" },
-  { code: "+32", country: "🇧🇪 Belgium" },
-  { code: "+501", country: "🇧🇿 Belize" },
-  { code: "+229", country: "🇧🇯 Benin" },
-  { code: "+975", country: "🇧🇹 Bhutan" },
-  { code: "+591", country: "🇧🇴 Bolivia" },
-  { code: "+387", country: "🇧🇦 Bosnia and Herzegovina" },
-  { code: "+267", country: "🇧🇼 Botswana" },
-  { code: "+55", country: "🇧🇷 Brazil" },
-  { code: "+673", country: "🇧🇳 Brunei" },
-  { code: "+359", country: "🇧🇬 Bulgaria" },
-  { code: "+226", country: "🇧🇫 Burkina Faso" },
-  { code: "+257", country: "🇧🇮 Burundi" },
-  { code: "+855", country: "🇰🇭 Cambodia" },
+  { code: "+376", country: "Andorra", iso: "AD" },
+  { code: "+244", country: "Angola", iso: "AO" },
+  { code: "+1268", country: "Antigua and Barbuda", iso: "AG" },
+  { code: "+54", country: "Argentina", iso: "AR" },
+  { code: "+374", country: "Armenia", iso: "AM" },
+  { code: "+297", country: "Aruba", iso: "AW" },
+  { code: "+61", country: "Australia", iso: "AU" },
+  { code: "+43", country: "Austria", iso: "AT" },
+  { code: "+994", country: "Azerbaijan", iso: "AZ" },
+  { code: "+1242", country: "Bahamas", iso: "BS" },
+  { code: "+973", country: "Bahrain", iso: "BH" },
+  { code: "+880", country: "Bangladesh", iso: "BD" },
+  { code: "+1246", country: "Barbados", iso: "BB" },
+  { code: "+375", country: "Belarus", iso: "BY" },
+  { code: "+32", country: "Belgium", iso: "BE" },
+  { code: "+501", country: "Belize", iso: "BZ" },
+  { code: "+229", country: "Benin", iso: "BJ" },
+  { code: "+975", country: "Bhutan", iso: "BT" },
+  { code: "+591", country: "Bolivia", iso: "BO" },
+  { code: "+387", country: "Bosnia and Herzegovina", iso: "BA" },
+  { code: "+267", country: "Botswana", iso: "BW" },
+  { code: "+55", country: "Brazil", iso: "BR" },
+  { code: "+673", country: "Brunei", iso: "BN" },
+  { code: "+359", country: "Bulgaria", iso: "BG" },
+  { code: "+226", country: "Burkina Faso", iso: "BF" },
+  { code: "+257", country: "Burundi", iso: "BI" },
+  { code: "+855", country: "Cambodia", iso: "KH" },
   { code: "+237", country: "🇨🇲 Cameroon" },
   { code: "+1", country: "🇨🇦 Canada" },
   { code: "+238", country: "🇨🇻 Cape Verde" },
