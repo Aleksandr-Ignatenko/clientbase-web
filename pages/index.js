@@ -222,11 +222,12 @@ export default function CRM() {
  ];
 // === Устанавливаем SVG-флаг для выбранной страны ===
 useEffect(() => {
-  const select = document.querySelector("select");
+  const select = document.getElementById("country-select");
   const selectedIso = countryCodes.find(c => c.code === form.countryCode)?.iso?.toLowerCase();
 
   if (select && selectedIso) {
-    select.style.backgroundImage = `url(https://flagcdn.com/${selectedIso}.svg)`;
+    const flagUrl = `https://flagcdn.com/w20/${selectedIso}.png`;
+    select.style.backgroundImage = `url(${flagUrl})`;
     select.style.backgroundRepeat = "no-repeat";
     select.style.backgroundPosition = "8px center";
     select.style.backgroundSize = "20px auto";
