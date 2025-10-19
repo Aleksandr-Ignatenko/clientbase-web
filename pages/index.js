@@ -8,9 +8,14 @@ import 'react-phone-input-2/lib/style.css';
 
 // --- Функция для конвертации ISO-кода (например "RU") в emoji-флаг ---
 function getFlagEmoji(isoCode) {
-  if (!isoCode || isoCode.length !== 2) return "";
-  // Преобразуем буквы в рег. индикаторные символы
-  const codePoints = [...isoCode.toUpperCase()].map(c => 127397 + c.charCodeAt(0));
+  if (!isoCode || isoCode.length !== 2) return "🏳️";
+  
+  // Альтернативный метод: используем региональные индикаторы
+  const codePoints = isoCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  
   return String.fromCodePoint(...codePoints);
 }
 
