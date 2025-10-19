@@ -46,3 +46,20 @@ button:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
+/* === ФЛАГИ В ВЫПАДАЮЩЕМ СПИСКЕ === */
+
+select option {
+  padding-left: 28px;
+  background-repeat: no-repeat;
+  background-size: 20px 15px;
+  background-position: 4px center;
+}
+
+/* Стили для select при отображении выбранного элемента */
+select {
+  background-repeat: no-repeat;
+  background-size: 20px 15px;
+  background-position: 4px center;
+  padding-left: 30px;
+}
+
