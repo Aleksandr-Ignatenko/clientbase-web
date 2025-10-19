@@ -226,7 +226,7 @@ useEffect(() => {
   options.forEach(opt => {
     const iso = opt.getAttribute("data-iso");
     if (iso) {
-      opt.style.backgroundImage = `url(https://flagcdn.com/w20/${iso.toLowerCase()}.png)`;
+      opt.style.backgroundImage = `url(https://flagcdn.com/w20/${iso.toLowerCase()}.svg)`;
     }
   });
 }, []);
@@ -236,7 +236,7 @@ useEffect(() => {
   const select = document.querySelector("select");
   const selectedIso = countryCodes.find(c => c.code === form.countryCode)?.iso?.toLowerCase();
   if (select && selectedIso) {
-    select.style.backgroundImage = `url(https://flagcdn.com/w20/${selectedIso}.png)`;
+    select.style.backgroundImage = `url(https://flagcdn.com/w20/${selectedIso}.svg)`;
   }
 }, [form.countryCode]);
 
