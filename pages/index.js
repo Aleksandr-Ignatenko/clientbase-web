@@ -220,23 +220,17 @@ export default function CRM() {
   { code: "+260", country: "Zambia", iso: "ZM" },
   { code: "+263", country: "Zimbabwe", iso: "ZW" }
  ];
-  // === Устанавливаем SVG-флаги для каждого option ===
-useEffect(() => {
-  const options = document.querySelectorAll("select option");
-  options.forEach(opt => {
-    const iso = opt.getAttribute("data-iso");
-    if (iso) {
-      opt.style.backgroundImage = `url(https://flagcdn.com/w20/${iso.toLowerCase()}.svg)`;
-    }
-  });
-}, []);
-
-  // === Обновляем фон выбранного <select> ===
+// === Устанавливаем SVG-флаг для выбранной страны ===
 useEffect(() => {
   const select = document.querySelector("select");
   const selectedIso = countryCodes.find(c => c.code === form.countryCode)?.iso?.toLowerCase();
+
   if (select && selectedIso) {
-    select.style.backgroundImage = `url(https://flagcdn.com/w20/${selectedIso}.svg)`;
+    select.style.backgroundImage = `url(https://flagcdn.com/${selectedIso}.svg)`;
+    select.style.backgroundRepeat = "no-repeat";
+    select.style.backgroundPosition = "8px center";
+    select.style.backgroundSize = "20px auto";
+    select.style.paddingLeft = "32px";
   }
 }, [form.countryCode]);
 
