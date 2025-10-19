@@ -62,4 +62,15 @@ select {
   background-position: 4px center;
   padding-left: 30px;
 }
+select {
+  background-color: white;
+  background-repeat: no-repeat;
+  background-position: 8px center;
+  background-size: 20px auto;
+  padding-left: 32px;
+  border-radius: 6px;
+  height: 34px;
+  font-size: 14px;
+  font-family: "Segoe UI", "Noto Color Emoji", "Apple Color Emoji", sans-serif;
+}
 
