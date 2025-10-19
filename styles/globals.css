@@ -53,3 +53,14 @@ button:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
+/* Принудительное включение цветных emoji-флагов в Chrome и Firefox */
+select, option {
+  font-family: 'Noto Color Emoji', 'Twemoji Mozilla', 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif !important;
+  color: black;
+}
+
+/* Убедимся, что браузер не заменяет эмодзи монохромными глифами */
+html, body {
+  font-feature-settings: "colr" 1, "COLR" 1, "CPAL" 1;
+  text-rendering: optimizeLegibility;
+}
