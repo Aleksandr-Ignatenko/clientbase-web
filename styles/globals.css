@@ -65,17 +65,3 @@ select {
   font-size: 14px;
   font-family: "Segoe UI", "Noto Color Emoji", "Apple Color Emoji", sans-serif;
 }
-/* --- Унификация размеров emoji-флагов в select --- */
-option {
-  font-size: 14px;
-  line-height: 1.6;
-  font-family: 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
-}
-
-/* Фикс для выравнивания высоты флагов */
-option::before {
-  display: inline-block;
-  width: 1.4em;
-  text-align: center;
-}
-
