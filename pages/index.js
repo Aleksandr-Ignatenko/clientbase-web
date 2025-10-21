@@ -220,6 +220,16 @@ export default function CRM() {
   { code: "+260", country: "Zambia", iso: "ZM" },
   { code: "+263", country: "Zimbabwe", iso: "ZW" }
  ];
+
+  // === Функция: ISO-код → Emoji флаг ===
+function getFlagEmoji(countryCode) {
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt());
+  return String.fromCodePoint(...codePoints);
+}
+
 // === Устанавливаем SVG-флаг для выбранной страны ===
 useEffect(() => {
   const select = document.getElementById("country-select");
@@ -418,11 +428,12 @@ useEffect(() => {
             value={form.countryCode}
             onChange={(e) => setForm({ ...form, countryCode: e.target.value })}
           >
-            {countryCodes.map((c) => (
-              <option key={c.code} value={c.code} data-iso={c.iso}>
-                {c.country} ({c.code})
-              </option>
-            ))}
+          {countryCodes.map((c) => (
+            <option key={c.code} value={c.code}>
+              {getFlagEmoji(c.iso)} {c.country} ({c.code})
+            </option>
+          ))}
+
           </select>
           <input
             placeholder="Телефон"
