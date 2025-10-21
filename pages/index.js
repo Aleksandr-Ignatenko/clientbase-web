@@ -222,13 +222,13 @@ export default function CRM() {
  ];
 
   // === Функция: ISO-код → Emoji флаг ===
-//function getFlagEmoji(countryCode) {
- // const codePoints = countryCode
-  //  .toUpperCase()
-   // .split('')
-  //  .map(char => 127397 + char.charCodeAt());
-//  return String.fromCodePoint(...codePoints);
-//}
+function getFlagEmoji(countryCode) {
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt());
+  return String.fromCodePoint(...codePoints);
+}
 
 // === Устанавливаем SVG-флаг для выбранной страны ===
 useEffect(() => {
