@@ -253,7 +253,7 @@ useEffect(() => {
 
   async function fetchClients() {
     const { data, error } = await supabase
-      .from("CRM")
+      .from("crm")
       .select("*")
       .eq("user_id", session.user.id)
       .order("created_at", { ascending: false });
@@ -291,7 +291,7 @@ useEffect(() => {
     let error;
     if (editingId) {
       ({ error } = await supabase
-        .from("CRM")
+        .from("crm")
         .update({
           full_name: form.full_name,
           email: form.email,
@@ -302,7 +302,7 @@ useEffect(() => {
         .eq("id", editingId)
         .eq("user_id", session.user.id));
     } else {
-      ({ error } = await supabase.from("CRM").insert([
+      ({ error } = await supabase.from("crm").insert([
         {
           user_id: session.user.id,
           full_name: form.full_name,
@@ -371,7 +371,7 @@ useEffect(() => {
   if (!session)
   return (
     <div style={{ maxWidth: 400, margin: "80px auto", textAlign: "center" }}>
-      <h2>🔐 Вход в CRM</h2>
+      <h2>🔐 Вход в crm</h2>
       <p style={{ marginBottom: 20 }}>
         Войдите с помощью email — ссылка для входа придёт на почту.
       </p>
@@ -396,7 +396,7 @@ useEffect(() => {
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1>CRM — Клиенты</h1>
+        <h1>crm — Клиенты</h1>
         <button onClick={logout}>Выйти</button>
       </div>
 
