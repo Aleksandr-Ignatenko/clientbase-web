@@ -296,7 +296,7 @@ useEffect(() => {
           full_name: form.full_name,
           email: form.email,
           phone: fullPhone,
-          company: form.company_name,
+          company_name: form.company_name,
           notes: form.notes,
         })
         .eq("id", editingId)
@@ -308,7 +308,7 @@ useEffect(() => {
           full_name: form.full_name,
           email: form.email,
           phone: fullPhone,
-          company: form.company_mane,
+          company_name: form.company_name,
           notes: form.notes,
         },
       ]));
@@ -330,7 +330,7 @@ useEffect(() => {
       email: client.email || "",
       countryCode: client.phone ? client.phone.match(/^\+\d+/)?.[0] || "+7" : "+7",
       phone: client.phone ? client.phone.replace(/^\+\d+/, "") : "",
-      company: client.company || "",
+      company_name: client.company_name || "",
       notes: client.notes || "",
     });
     setEditingId(client.id);
@@ -441,7 +441,7 @@ useEffect(() => {
         <input
           placeholder="Компания"
           value={form.company_name}
-          onChange={(e) => setForm({ ...form, company: e.target.value })}
+          onChange={(e) => setForm({ ...form, company_name: e.target.value })}
         />
         <input
           placeholder="Заметки"
@@ -481,7 +481,7 @@ useEffect(() => {
                 <td>{c.full_name}</td>
                 <td>{c.email}</td>
                 <td>{c.phone}</td>
-                <td>{c.company}</td>
+                <td>{c.company_name}</td>
                 <td>{c.notes}</td>
                 <td>
                   <button onClick={() => editClient(c)}>✏️</button>{" "}
