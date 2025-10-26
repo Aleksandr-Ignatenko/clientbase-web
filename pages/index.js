@@ -340,7 +340,7 @@ useEffect(() => {
   async function deleteClient(id) {
     if (!confirm("Удалить клиента?")) return;
     const { error } = await supabase
-      .from("CRM")
+      .from("crm")
       .delete()
       .eq("id", id)
       .eq("user_id", session.user.id);
