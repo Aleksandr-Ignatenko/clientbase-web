@@ -253,7 +253,7 @@ useEffect(() => {
 
   async function fetchClients() {
     const { data, error } = await supabase
-      .from(crm)
+      .from("crm")
       .select("*")
       .eq("user_id", session.user.id)
       .order("created_at", { ascending: false });
@@ -291,7 +291,7 @@ useEffect(() => {
     let error;
     if (editingId) {
       ({ error } = await supabase
-        .from(crm)
+        .from("crm")
         .update({
           full_name: form.full_name,
           email: form.email,
@@ -302,7 +302,7 @@ useEffect(() => {
         .eq("id", editingId)
         .eq("user_id", session.user.id));
     } else {
-      ({ error } = await supabase.from(crm).insert([
+      ({ error } = await supabase.from("crm").insert([
         {
           user_id: session.user.id,
           full_name: form.full_name,
@@ -340,7 +340,7 @@ useEffect(() => {
   async function deleteClient(id) {
     if (!confirm("Удалить клиента?")) return;
     const { error } = await supabase
-      .from(crm)
+      .from("crm")
       .delete()
       .eq("id", id)
       .eq("user_id", session.user.id);
