@@ -296,7 +296,7 @@ useEffect(() => {
           full_name: form.full_name,
           email: form.email,
           phone: fullPhone,
-          company: form.company,
+          company: form.company_name,
           notes: form.notes,
         })
         .eq("id", editingId)
@@ -308,7 +308,7 @@ useEffect(() => {
           full_name: form.full_name,
           email: form.email,
           phone: fullPhone,
-          company: form.company,
+          company: form.company_mane,
           notes: form.notes,
         },
       ]));
@@ -440,7 +440,7 @@ useEffect(() => {
 
         <input
           placeholder="Компания"
-          value={form.company}
+          value={form.company_name}
           onChange={(e) => setForm({ ...form, company: e.target.value })}
         />
         <input
