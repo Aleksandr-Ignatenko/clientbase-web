@@ -12,8 +12,8 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-// Главный компонент CRM
-export default function CRM() {
+// Главный компонент crm
+export default function crm() {
   // --- Состояния ---
   const [session, setSession] = useState(null);
     // Список клиентов
