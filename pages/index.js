@@ -304,6 +304,7 @@ useEffect(() => {
     } else {
       ({ error } = await supabase.from("crm").insert([
         {
+          owner_id: session.user.id,
           user_id: session.user.id,
           full_name: form.full_name,
           email: form.email,
