@@ -290,29 +290,36 @@ useEffect(() => {
 
     let error;
     if (editingId) {
-      ({ error } = await supabase
-        .from("crm")
-        .update({
-          full_name: form.full_name,
-          email: form.email,
-          phone: fullPhone,
-          company_name: form.company_name,
-          notes: form.notes,
-        })
-        .eq("id", editingId)
-        .eq("user_id", session.user.id));
-    } else {
-      ({ error } = await supabase.from("crm").insert([
-        {
-          owner_id: session.user.id,
-          user_id: session.user.id,
-          full_name: form.full_name,
-          email: form.email,
-          phone: fullPhone,
-          company_name: form.company_name,
-          notes: form.notes,
-        },
-      ]));
+// UPDATE (editingId)
+({ error } = await supabase
+  .from('crm')
+  .update({
+    full_name: form.full_name,
+    email: form.email,
+    phone: fullPhone,
+    company_name: form.company_name,
+    notes: form.notes,
+    owner_id: session.user.id // <-- обязательно
+  })
+  .eq('id', editingId)
+  .eq('user_id', session.user.id)
+);
+
+// INSERT (new)
+({ error } = await supabase
+  .from('crm')
+  .insert([
+    {
+      user_id: session.user.id,
+      owner_id: session.user.id, // <-- обязательно
+      full_name: form.full_name,
+      email: form.email,
+      phone: fullPhone,
+      company_name: form.company_name,
+      notes: form.notes,
+    },
+  ])
+);
     }
 
     setLoading(false);
